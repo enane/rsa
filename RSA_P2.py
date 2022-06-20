@@ -2,6 +2,7 @@
 Python based gui application to encrypt and decrypt text using Caesar Cipher.
 - By B.Shubankar
 '''
+from pydoc import plain
 import tkinter as tk
 import tkinter.font as tkfont
 from tkinter import *
@@ -10,6 +11,7 @@ from rsa import rsa
 
 # import RSA
 
+rsasystem = 0
 
 root = tk.Tk()
 
@@ -35,10 +37,17 @@ canvas.create_window(200,150,window=user_text)
 label12 = tk.Label(root,text= "Choose key",width=20,bg="MediumPurple1")
 label12.config(font=bold_font)
 
+def generate_rsa_system(event):
+    global rsasystem
+    key = int(event.strip())
+    rsasystem = rsa.Rsa(key)
+
 clicked = StringVar(root)
 clicked.set("Select a key")
 keys = ["Select a key", "    256   ", "   512   ", "  1024  "]
-drop = OptionMenu(root, clicked, *keys)
+drop = OptionMenu(root, clicked, *keys, command=generate_rsa_system)
+
+
 
 canvas.create_window(200,200,window=label12)
 user_key = tk.Entry(root)
@@ -65,35 +74,34 @@ label4.config(font=bold_font)
 canvas.create_window(300,350,window=label4)
 
 def encryption():
-    key = int(clicked.get())
-    rsasystem = rsa.Rsa(key)
+    key = clicked.get()
     plain_text = user_text.get()
-    cipher_text = rsasystem.ENCRYPT_MESSAFE(plain_text)
-    # cipher_text = ""
-    # for i in range(len(plain_text)):
-    #     letter = plain_text[i]
-    #     if(letter.isupper()):
-    #         cipher_text+=chr((ord(letter)+key-65)%26+65)
-    #     else:
-    #         cipher_text+=chr((ord(letter)+key-97)%26+97)
-    label5 =tk.Label(root,text=cipher_text,width=20,bg="light yellow")
-    label5.config(font=bold_font)
-    canvas.create_window(200,450,window=label5)
+    if(plain_text.strip() == ''): cipher_text = 'Please enter text'
+    elif(key == 'Select a key'): cipher_text = 'Please select a key'
+    else: 
+        cipher_text = rsasystem.ENCRYPT_MESSAFE(plain_text)
+    label6 = Text(root, height = 10, width=40, borderwidth=0)    
+    label6.insert(1.0, cipher_text)
+    label6.configure(state="disabled")
+    # label6 =tk.Label(root,text=plain_text,bg="light yellow")
+    # label6.config(font=bold_font)
+    canvas.create_window(200,450,window=label6)
+    # print(cipher_text)
+    # label5 =tk.Label(root,text=cipher_text,bg="light yellow")
+    # label5.config(font=bold_font)
+    # canvas.create_window(200,450,window=label5)
 
 def decryption():
-    key = int(clicked.get())
-    rsasystem = rsa.Rsa(key)
     cipher_text = user_text.get()
     plain_text = rsasystem.DECRYPT_MESSAGE(cipher_text)
-    # plain_text = ""
-    # for i in range(len(cipher_text)):
-    #     letter = cipher_text[i]
-    #     if(letter.isupper()):
-    #         plain_text+=chr((ord(letter)-key-65)%26+65)
-    #     else:
-    #         plain_text+=chr((ord(letter)-key-97)%26+97)
-    label6 =tk.Label(root,text=plain_text,width=20,bg="light yellow")
-    label6.config(font=bold_font)
+
+    print(plain_text)
+
+    label6 = Text(root, height = 10, width=40, borderwidth=0)
+    label6.insert(1.0, plain_text)
+    label6.configure(state="disabled")
+    # label6 =tk.Label(root,text=plain_text,bg="light yellow")
+    # label6.config(font=bold_font)
     canvas.create_window(200,450,window=label6)
 
 label7 =tk.Label(root,text="Converted Text ",width=20,bg="MediumPurple1")
